@@ -1,12 +1,13 @@
-// src/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import blogReducer from './blogSlice';
 import userReducer from './userSlice';
+import thumbReducer from './thumbSlice';
 
 const store = configureStore({
   reducer: {
-    blog: blogReducer,
     user: userReducer,
+    blog: blogReducer,
+    thumb: thumbReducer,
   },
 });
 

@@ -123,4 +123,6 @@ export const getRecentHistory = () => {
 
 // 导出 actions 和 reducer
 export const { addToHistory, updateBlogThumbStatus } = blogSlice.actions;
-export default blogSlice.reducer;
+ const blogReducer = blogSlice.reducer;
+export default blogReducer;
+

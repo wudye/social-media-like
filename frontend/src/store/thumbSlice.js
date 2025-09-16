@@ -4,7 +4,7 @@ import { thumbApi } from '../api/services';
 
 // 初始状态
 const initialState = {
-  thumbedBlogs: new Set(), // 用户已点赞的博客ID集合
+  thumbedBlogs: [], // 用户已点赞的博客ID数组
   isLoading: false,        // 点赞操作状态
 };
 
@@ -58,10 +58,13 @@ const thumbSlice = createSlice({
     // 设置博客的点赞状态
     setThumbStatus: (state, action) => {
       const { blogId, status } = action.payload;
-      if (status) {
-        state.thumbedBlogs.add(String(blogId));
-      } else {
-        state.thumbedBlogs.delete(String(blogId));
+      const strBlogId = String(blogId);
+      const index = state.thumbedBlogs.indexOf(strBlogId);
+
+      if (status && index === -1) {
+        state.thumbedBlogs.push(strBlogId);
+      } else if (!status && index !== -1) {
+        state.thumbedBlogs.splice(index, 1);
       }
     },
     // 批量设置点赞状态
@@ -70,10 +73,13 @@ const thumbSlice = createSlice({
       if (!blogs || !blogs.length) return;
 
       blogs.forEach(blog => {
-        if (blog.hasThumb) {
-          state.thumbedBlogs.add(String(blog.id));
-        } else {
-          state.thumbedBlogs.delete(String(blog.id));
+        const strBlogId = String(blog.id);
+        const index = state.thumbedBlogs.indexOf(strBlogId);
+
+        if (blog.hasThumb && index === -1) {
+          state.thumbedBlogs.push(strBlogId);
+        } else if (!blog.hasThumb && index !== -1) {
+          state.thumbedBlogs.splice(index, 1);
         }
       });
     },
@@ -85,7 +91,10 @@ const thumbSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(doThumb.fulfilled, (state, action) => {
-        state.thumbedBlogs.add(String(action.payload));
+        const strBlogId = String(action.payload);
+        if (!state.thumbedBlogs.includes(strBlogId)) {
+          state.thumbedBlogs.push(strBlogId);
+        }
         state.isLoading = false;
       })
       .addCase(doThumb.rejected, (state) => {
@@ -96,7 +105,8 @@ const thumbSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(undoThumb.fulfilled, (state, action) => {
-        state.thumbedBlogs.delete(String(action.payload));
+        const strBlogId = String(action.payload);
+        state.thumbedBlogs = state.thumbedBlogs.filter(id => id !== strBlogId);
         state.isLoading = false;
       })
       .addCase(undoThumb.rejected, (state) => {
@@ -108,7 +118,7 @@ const thumbSlice = createSlice({
 // Selectors
 export const selectThumbedBlogs = (state) => state.thumb.thumbedBlogs;
 export const selectIsLoading = (state) => state.thumb.isLoading;
-export const hasThumb = (state, blogId) => state.thumb.thumbedBlogs.has(String(blogId));
+export const hasThumb = (state, blogId) => state.thumb.thumbedBlogs.includes(String(blogId));
 
 // 导出 actions 和 reducer
 export const { setThumbStatus, setMultipleThumbStatus } = thumbSlice.actions;

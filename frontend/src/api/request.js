@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { clearUser } from '../store/userSlice';
-import store from '../store/store';
 // 创建axios实例
 const request = axios.create({
   baseURL: '/api',
@@ -43,7 +41,7 @@ request.interceptors.response.use(
     document.body.classList.remove('api-loading');
     return response;
   },
-  (error) => {
+  async (error) => {
     document.body.classList.remove('api-loading');
     
     // 错误处理
@@ -52,6 +50,9 @@ request.interceptors.response.use(
       
       // 处理401未授权错误
       if (status === 401) {
+        // 动态导入store和action以打破循环依赖
+        const { default: store } = await import('../store/store');
+        const { clearUser } = await import('../store/userSlice');
         store.dispatch(clearUser());
 
         // 可以在这里添加提示或跳转登录页面
@@ -96,4 +97,4 @@ export const post = (url, data = {}) => {
   });
 };
 
-export default request; 
+export default request;
