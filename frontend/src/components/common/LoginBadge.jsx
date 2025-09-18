@@ -35,17 +35,17 @@ const LoginBadge = () => {
           </span>
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-500 hover:text-red-500 transition-colors"
+            className="text-sm text-red-500 hover:text-red-500 transition-colors"
           >
-            退出
+            exit
           </button>
         </div>
       ) : (
         <button
           onClick={goToLogin}
-          className="btn btn-primary text-sm py-1 px-3"
+          className="btn btn-primary text-sm py-1 px-3 rounded-md bg-red-500"
         >
-          登录
+          login
         </button>
       )}
     </div>
